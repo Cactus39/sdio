@@ -48,9 +48,7 @@ void    ft_sm_init()
     sm_config_set_out_shift(&cmd_c, false, false, 32);
     sm_config_set_in_shift(&cmd_c, false, false, 8);
     sm_config_set_clkdiv(&cmd_c, 6.250f);
-    // sm_config_set_clkdiv(&cmd_c, 312.5f);
     
-    // pio_sm_set_pins_with_mask(pio, sm_cmd, 0, (1 << CMD_PIN) | (1 << CLK_PIN));
     pio_sm_init(pio, sm_cmd, offset_cmd, &cmd_c);
 }
 
@@ -61,13 +59,12 @@ uint8_t *ft_send_cmd(t_cmd CMD, int r)
     pio_sm_set_enabled(pio, sm_cmd, false);
     pio_sm_clear_fifos(pio, sm_cmd);
     pio_sm_restart(pio, sm_cmd);
-    // pio_sm_clkdiv_restart(my_pio, sm_send);
     
     pio_sm_exec(pio, sm_cmd, pio_encode_jmp(offset_cmd));
     pio_sm_set_enabled(pio, sm_cmd, true);
     // printf("[%08x", (CMD.bytes[0]<<24 | CMD.bytes[1]<<16 | CMD.bytes[2]<<8 | CMD.bytes[3]));
     // printf("%04x]", (CMD.bytes[4]<<24 | CMD.bytes[5]<<16));
-    
+
     pio_sm_put_blocking(pio, sm_cmd, (CMD.bytes[0]<<24 | CMD.bytes[1]<<16 | CMD.bytes[2]<<8 | CMD.bytes[3]));
     pio_sm_put_blocking(pio, sm_cmd, (CMD.bytes[4]<<24 | CMD.bytes[5]<<16));
     while (!pio_sm_is_tx_fifo_empty(pio, sm_cmd));
@@ -126,7 +123,6 @@ void    ft_sm_dat_init()
     
     sm_config_set_out_shift(&dat_c, false, false, 8);
     sm_config_set_in_shift(&dat_c, false, false, 32);
-    // sm_config_set_clkdiv(&dat_c, 312.5f);
     sm_config_set_clkdiv(&dat_c, 6.250f);
     pio_sm_init(pio, sm_dat, offset_dat, &dat_c);
 
@@ -139,7 +135,6 @@ uint8_t *ft_read_sd(uint arg)
 
     pio_sm_clear_fifos(pio, sm_dat);
     pio_sm_restart(pio, sm_dat);
-    // pio_sm_clkdiv_restart(pio, sm_dat);
 
     pio_sm_exec(pio, sm_dat, pio_encode_irq_set(0, 4));
     pio_sm_exec(pio, sm_dat, pio_encode_jmp(offset_dat));
@@ -157,12 +152,11 @@ uint8_t *ft_read_sd(uint arg)
     }
     // while(!pio_sm_is_rx_fifo_empty(pio, sm_dat));
         // ft_wait(1);
-    // sleep_ms(1);
+    
     ft_wait(1);
 
     pio_sm_set_enabled(pio, sm_dat, false);
     // ft_print_buffer(buff, 0, 64);
-    // printf("[%02x %02x]\n"buff[510], buff[511]);
     return (buff);
 }
 
@@ -197,11 +191,6 @@ uint32_t    ft_get_uint32(uint8_t *buff, uint offset)
     uint32_t    res;
     res = 0;
     res = buff[offset + 3] << 24 | buff[offset + 2] << 16 | buff[offset + 1] << 8 | buff[offset];
-    // for (int i = 0; i < 4; i++)
-    // {
-    //     res = res << 8;
-    //     res |= buff[offset + 3 - i];
-    // }
     return (res);
 }
 
@@ -210,10 +199,5 @@ uint16_t    ft_get_uint16(uint8_t *buff, uint offset)
     uint16_t    res;
     res = 0;
     res = buff[offset + 1] << 8 | buff[offset];
-    // for (int i = 0; i < 2; i++)
-    // {
-    //     res = res << 8;
-    //     res |= buff[offset + 1 - i];
-    // }
     return (res);
 }
