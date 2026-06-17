@@ -111,14 +111,24 @@ int ft_print_buffer(unsigned char *buffer, int flag, int count)
 void    ft_sm_dat_init()
 {
     pio_gpio_init(pio, DAT0_PIN);
+    // pio_gpio_init(pio, DAT1_PIN);
+    // pio_gpio_init(pio, DAT2_PIN);
+    // pio_gpio_init(pio, DAT3_PIN);
     gpio_pull_up(DAT0_PIN);
+    // gpio_pull_up(DAT1_PIN);
+    // gpio_pull_up(DAT2_PIN);
+    // gpio_pull_up(DAT3_PIN);
     
     pio_sm_set_consecutive_pindirs(pio, sm_dat, DAT0_PIN, 1, false);
+    // pio_sm_set_consecutive_pindirs(pio, sm_dat, DAT0_PIN, 4, false);
     pio_sm_set_consecutive_pindirs(pio, sm_dat, CLK_PIN, 1, true);
 
     pio_sm_config dat_c = dat_asm_program_get_default_config(offset_dat);
     sm_config_set_sideset_pins(&dat_c, CLK_PIN);
     sm_config_set_in_pins(&dat_c, DAT0_PIN);
+    // sm_config_set_in_pins(&dat_c, DAT1_PIN);
+    // sm_config_set_in_pins(&dat_c, DAT2_PIN);
+    // sm_config_set_in_pins(&dat_c, DAT3_PIN);
     sm_config_set_jmp_pin(&dat_c, DAT0_PIN);
     
     sm_config_set_out_shift(&dat_c, false, false, 8);

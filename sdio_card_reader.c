@@ -38,8 +38,15 @@ int main()
     r1 = ft_send_cmd(ft_cmd(2, 0), 20);
     r1 = ft_send_cmd(ft_cmd(3, 0), 8);
     rca = r1[1] << 8 | r1[2];
+    r1 = ft_send_cmd(ft_cmd(55, (rca << 16)), 8);
+    r1 = ft_send_cmd(ft_cmd(41, 2), 8);
+    // r1 = ft_send_cmd(ft_cmd(55, (rca << 16)), 8);
+    // r1 = ft_send_cmd(ft_cmd(41, 2), 8);
     r1 = ft_send_cmd(ft_cmd(9, (rca << 16)), 20);
     C_SIZE = (((r1[8] & 0x3F)<<16) | (r1 [9] << 8) | r1 [10]);
+
+
+
     ft_send_cmd(ft_cmd(7, (rca << 16)), 8);
     
     tusb_init();

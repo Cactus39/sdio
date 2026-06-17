@@ -15,6 +15,9 @@
 # define CMD_PIN 5
 # define CLK_PIN 6
 # define DAT0_PIN 7
+# define DAT1_PIN 8
+# define DAT2_PIN 9
+# define DAT3_PIN 10
 
 extern PIO             pio;
 extern uint            sm_cmd;
