@@ -1,5 +1,6 @@
 #include "sdio.h"
 
+//adding crc to the last cmd byte
 t_cmd ft_crc7(t_cmd CMD)
 {
     uint8_t     byte;
@@ -22,6 +23,7 @@ t_cmd ft_crc7(t_cmd CMD)
     return (CMD);
 }
 
+//creating cmd from int cmd number and argument
 t_cmd   ft_cmd(int cmd_arg, uint32_t arg)
 {
     t_cmd   cmd = {{(uint8_t)0x40 + cmd_arg, (uint8_t)(arg >> 24), \
@@ -30,6 +32,7 @@ t_cmd   ft_cmd(int cmd_arg, uint32_t arg)
     return (cmd);   
 }
 
+//init state machine for cmd line
 void    ft_sm_init()
 {
     pio_gpio_init(pio, CMD_PIN);
@@ -52,7 +55,7 @@ void    ft_sm_init()
     pio_sm_init(pio, sm_cmd, offset_cmd, &cmd_c);
 }
 
-
+// send command and receive answer r bytes
 uint8_t *ft_send_cmd(t_cmd CMD, int r)
 {
     static uint8_t buff[32];
@@ -77,7 +80,7 @@ uint8_t *ft_send_cmd(t_cmd CMD, int r)
     return (buff);
 }
 
-
+//print buffer flag == if_printable, count - bytes
 int ft_print_buffer(unsigned char *buffer, int flag, int count)
 {
     int i = 0;
@@ -107,28 +110,18 @@ int ft_print_buffer(unsigned char *buffer, int flag, int count)
     return (0);
 }
 
-
+//init state machine for data line
 void    ft_sm_dat_init()
 {
     pio_gpio_init(pio, DAT0_PIN);
-    // pio_gpio_init(pio, DAT1_PIN);
-    // pio_gpio_init(pio, DAT2_PIN);
-    // pio_gpio_init(pio, DAT3_PIN);
     gpio_pull_up(DAT0_PIN);
-    // gpio_pull_up(DAT1_PIN);
-    // gpio_pull_up(DAT2_PIN);
-    // gpio_pull_up(DAT3_PIN);
     
     pio_sm_set_consecutive_pindirs(pio, sm_dat, DAT0_PIN, 1, false);
-    // pio_sm_set_consecutive_pindirs(pio, sm_dat, DAT0_PIN, 4, false);
     pio_sm_set_consecutive_pindirs(pio, sm_dat, CLK_PIN, 1, true);
 
     pio_sm_config dat_c = dat_asm_program_get_default_config(offset_dat);
     sm_config_set_sideset_pins(&dat_c, CLK_PIN);
     sm_config_set_in_pins(&dat_c, DAT0_PIN);
-    // sm_config_set_in_pins(&dat_c, DAT1_PIN);
-    // sm_config_set_in_pins(&dat_c, DAT2_PIN);
-    // sm_config_set_in_pins(&dat_c, DAT3_PIN);
     sm_config_set_jmp_pin(&dat_c, DAT0_PIN);
     
     sm_config_set_out_shift(&dat_c, false, false, 8);
@@ -138,6 +131,7 @@ void    ft_sm_dat_init()
 
 }
 
+//send cmd 17 with lbr as argument
 uint8_t *ft_read_sd(uint arg)
 {
     static uint8_t  buff[512 + 16];
@@ -150,7 +144,7 @@ uint8_t *ft_read_sd(uint arg)
     pio_sm_exec(pio, sm_dat, pio_encode_jmp(offset_dat));
     pio_sm_set_enabled(pio, sm_dat, true);
     ft_send_cmd(ft_cmd(17, arg), 0);
-    bzero(buff, 512 + 16);
+    // bzero(buff, 512 + 16);
 
     for (int i = 0; i < (512); i += 4)
     {
@@ -162,52 +156,16 @@ uint8_t *ft_read_sd(uint arg)
     }
     // while(!pio_sm_is_rx_fifo_empty(pio, sm_dat));
         // ft_wait(1);
-    
     ft_wait(1);
-
     pio_sm_set_enabled(pio, sm_dat, false);
-    // ft_print_buffer(buff, 0, 64);
     return (buff);
 }
 
-// t_pbr   ft_read_pbr(PIO my_pio, uint sm_cmd, uint offset_cmd, uint sm_dat, uint offset_dat, uint lbr)
-// {
-// // typedef struct s_pbr
-// // {
-// //     uint16_t    sec_size_bytes;
-// //     uint8_t     sec_per_cluster;
-// //     uint16_t    rsvd_sec_count;
-// //     uint8_t     num_FATs;
-// //     uint32_t    total_sec_count;
-// //     uint32_t    FAT_size_sec;
-// // }   t_pbr;
-//     t_pbr       res;
-//     uint8_t *buffer;
-//     buffer = ft_read_sd(my_pio, sm_dat, offset_dat, sm_cmd, offset_cmd, lbr);
-
-//     res.sec_size_bytes = ft_get_uint16(buffer, 0x0b);
-//     res.sec_per_cluster = buffer[0x0d];
-//     res.rsvd_sec_count = ft_get_uint16(buffer, 0x0e);
-//     res.num_FATs = buffer[0x10];
-//     res.total_sec_count = ft_get_uint32(buffer, 0x20);
-//     res.FAT_size_sec = ft_get_uint32(buffer, 0x24);
-//     res.Root_cluster = ft_get_uint32(buffer, 0x2c);
-//     return (res);
-// }
-
-
-uint32_t    ft_get_uint32(uint8_t *buff, uint offset)
+void ft_soft_reset(void)
 {
-    uint32_t    res;
-    res = 0;
-    res = buff[offset + 3] << 24 | buff[offset + 2] << 16 | buff[offset + 1] << 8 | buff[offset];
-    return (res);
-}
-
-uint16_t    ft_get_uint16(uint8_t *buff, uint offset)
-{
-    uint16_t    res;
-    res = 0;
-    res = buff[offset + 1] << 8 | buff[offset];
-    return (res);
+    printf("restart system\n");
+    sleep_ms(1000);
+    watchdog_reboot(0, 0, 0);
+    while (1)
+        __breakpoint();
 }

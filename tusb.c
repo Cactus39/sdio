@@ -1,6 +1,7 @@
 #include "tusb.h"
 #include "sdio.h"
 
+//wait ms while run usb task
 void    ft_wait(int ms)
 {
     uint32_t    start = board_millis();
@@ -9,6 +10,7 @@ void    ft_wait(int ms)
         tud_task();
 }
 
+// callback for inquiry
 void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16], uint8_t product_rev[4]) {
     (void) lun;
     const char vid[] = "Pico";
@@ -37,7 +39,7 @@ bool    tud_msc_is_writable_cb(uint8_t lun)
     return false;
 }
 
-
+//callback for read preset for buffsize 64
 int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void* buffer, uint32_t bufsize) {
     (void) lun;
 

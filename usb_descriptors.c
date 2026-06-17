@@ -43,7 +43,6 @@ tusb_desc_device_t const desc_device = {
     .bNumConfigurations = 0x01
 };
 
-
 uint8_t const * tud_descriptor_device_cb(void) {
     return (uint8_t const *) &desc_device;
 }
@@ -55,7 +54,6 @@ enum {
     ITF_NUM_MSC = 0,
     ITF_NUM_TOTAL
 };
-
 
 #define EPNUM_MSC_OUT    0x01
 #define EPNUM_MSC_IN     0x81
@@ -77,7 +75,6 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index) {
    ==================================================================== */
 static uint16_t _desc_str[32];
 
-
 static void msc_id_init(void) {
     static bool initialized = false;
     if (initialized) return;
@@ -93,6 +90,7 @@ static void msc_id_init(void) {
     initialized = true;
 }
 
+//formating string for usb
 uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
     (void) langid;
     
