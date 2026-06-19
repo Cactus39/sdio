@@ -62,8 +62,8 @@ int main()
     ft_print_buffer(r1, 1, 8);
     rca = r1[1] << 8 | r1[2];
     printf("rca - %04x\n", rca);
-    // r1 = ft_send_cmd(ft_cmd(55, (rca << 16)), 8);
-    // r1 = ft_send_cmd(ft_cmd(41, 2), 8);
+    r1 = ft_send_cmd(ft_cmd(55, (rca << 16)), 8);
+    r1 = ft_send_cmd(ft_cmd(41, 2), 8);
     
     //read card size
     r1 = ft_send_cmd(ft_cmd(9, (rca << 16)), 20);
