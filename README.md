@@ -4,12 +4,15 @@
 
 A bare-metal C implementation of an SDIO SD card reader utilizing the **RP2040 (Raspberry Pi Pico)**. This project leverages the RP2040's unique **PIO (Programmable I/O)** state machines to handle the low-level, high-speed SDIO protocol natively, exposing the card as a standard USB Mass Storage device via **TinyUSB**.
 
+![pinout](photos/sdcard.png)
+
 ---
 
 ## 🚀 Key Technical Features
 
 * **Custom SDIO Driver via PIO:** Bypasses slower SPI modes by implementing native SDIO command and data transport layers using RP2040 PIO state machines (`cmd_asm.pio` and `dat_asm.pio`).
 * **USB Mass Storage Class (MSC):** Integrates with the TinyUSB stack to enumerate the RP2040 as a standard USB flash drive.
+![core log](photos/log.png)
 
 ---
 
