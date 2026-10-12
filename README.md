@@ -1,6 +1,6 @@
 # RP2040 SDIO USB Mass Storage Card Reader (readonly)
 
-!(photos/IMG_7122.jpg)
+![](photos/IMG_7122.jpg)
 
 A bare-metal C implementation of an SDIO SD card reader utilizing the **RP2040 (Raspberry Pi Pico)**. This project leverages the RP2040's unique **PIO (Programmable I/O)** state machines to handle the low-level, high-speed SDIO protocol natively, exposing the card as a standard USB Mass Storage device via **TinyUSB**.
 
